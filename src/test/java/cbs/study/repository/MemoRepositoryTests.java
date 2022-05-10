@@ -6,6 +6,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
@@ -72,5 +75,30 @@ class MemoRepositoryTests {
         Long mno =100L;
 
         memoRepository.deleteById(mno);
+    }
+
+    @Test
+    @DisplayName("페이징 처리 테스트")
+    public void testPageDefault(){
+        Pageable pageable = PageRequest.of(0, 10);//페이지당 10개
+        Page<Memo> result = memoRepository.findAll(pageable);
+        System.out.println(result);
+
+        //페이징 처리에 사용하는 limit 사용된 것을 확인
+        //두번째로는 count()를 이용하여 전체 개수를 처리한 것을 확인할 수 있다.
+
+        System.out.println("---------------------------------");
+        System.out.println("result.getTotalPages() = " + result.getTotalPages());   //총 페이지
+        System.out.println("result.getTotalElements() = " + result.getTotalElements()); //전체 개수
+        System.out.println("result.getNumber() = " + result.getNumber());   //현재 페이지 번호 -> 페이지 번호는 0부터
+        System.out.println("result.getSize() = " + result.getSize());   //페이지당 개수
+        System.out.println("result.hasNext() = " + result.hasNext());   //다음페이지 존재 여부
+        System.out.println("result.isFirst() = " + result.isFirst());   //시작페이지 여부
+
+        //실제 페이지 데이터 처리
+        System.out.println("======실제 페이지 처리=========");
+        for(Memo memo : result.getContent()){
+            System.out.println(memo);
+        }
     }
 }
